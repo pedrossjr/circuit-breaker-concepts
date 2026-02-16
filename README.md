@@ -2,26 +2,29 @@ https://marcdias.com.br/vamos-implementar-o-circuit-breaker-pattern/
 
 https://medium.com/trainingcenter/design-pattern-para-microservices-circuit-breaker-f4a5b68f73d1
 
-## Fundamentos básico sobre Circuit Breaker
+## Circuit Breaker um design pattern para uso com microserviços
 
 ### O que é Circuit Breaker?
 
-Em uma situação real, pense em um disjuntor elétrico na sua casa. Se houver uma sobrecarga (como muitos aparelhos ligados), o disjuntor "abre" (desliga) para evitar um incêndio ou dano maior. Depois de um tempo, você pode "fechar" ele novamente para testar se o problema foi resolvido.  
+O Circuit Breaker é a tradução literária para “Disjuntor” então, fazendo uma analogia a engenharia elétrica, pense em um disjuntor de energia em uma residência, quando há uma sobrecarga de energia, devido a muitos aparelhos ligados, o disjuntor, também conhecido com DR, “abre” ou seja, desliga a energia para que não ocorra danos aos aparelhos ou algo maior como um incêndio por exemplo. Após a correção da elétrica, o eletricista pode “fechar“ o disjuntor novamente para testar se o problema foi resolvido, caso o contrário ele o mantém aberto até tudo estar resolvido.
 
-No software: Em aplicações onde um serviço chama outro (ex: um app de e-commerce chamando um serviço de pagamento), se o serviço chamado falhar repetidamente (por lentidão, erro ou sobrecarga), o Circuit Breaker "abre" para impedir que as chamadas continuem falhando e consumam recursos desnecessariamente. Isso previne um efeito cascata de falhas no sistema inteiro.  
+Na engenharia de software o Circuit Breaker funciona da mesma maneira. É um Design Pattern muito utilizado em microserviços, garantindo a proteção da aplicação de receber novas requisições assim que for detectado um problema que cause repetidas falhas de requisição impedindo que estas requisições continuem, falhando sucessivamente e consumindo recursos desnecessários do servidor de aplicação. Esta ação previne contra efeito em cascata de falhas no sistema por inteiro.
 
-Por que usar? Em ambientes distribuídos, falhas são inevitáveis (rede cai, servidor sobrecarregado). O Circuit Breaker ajuda a:
-- Reduzir latência (não fica esperando respostas que não vêm).
-- Evitar sobrecarga em serviços falhando.
-- Permitir recuperação automática.
+Em sistemas distribuídos em ambientes de produção, as falhas são inevitáveis e tudo é uma questão de tempo, o servidor sobrecarrega, a rede cai e neste momento que o Circuit Breaker entra em ação, através de algumas regras definidas. Ele monitora a aplicação e quando falhas recorrentes são identificadas o disjuntor “abre” para evitar mais problemas impedindo posteriormente uma catástrofe sistêmica.
+
+O Circuit Breaker em geral ajuda a:
+
+- Reduzir latência (espera por respostas que não virão).
+- Evitar sobrecarga (falhas recorrentes de requisições causando sobrecarga no serviço).
+- Recuperação automática (Automaticamente o serviço retorna quando não são mais detectados problemas).
 
 ### Estados de um Circuit Breaker
 
-**Closed (Fechado):** Estado normal. Todas as chamadas passam. Ele monitora falhas (ex: contagem de erros ou timeouts).  
+**Closed (Fechado):** Estado normal. Todas as chamadas passam. Ele monitora falhas (ex: contagem de erros ou timeouts).
 
-**Open (Aberto):** Se o número de falhas ultrapassar um limite (threshold), ele "abre". Nenhuma chamada real é feita; em vez disso, retorna um erro imediato ou um fallback (resposta alternativa, como "Tente mais tarde").  
+**Open (Aberto):** Se o número de falhas ultrapassar um limite (threshold), ele "abre". Nenhuma chamada real é feita; em vez disso, retorna um erro imediato ou um fallback (resposta alternativa, como "Não foi possível processar sua requisição. Tente novamente mais tarde").
 
-**Half-Open (Meio-Aberto):** Após um tempo de cooldown (ex: 30 segundos), ele permite uma ou poucas chamadas de teste. Se der certo, volta para Closed; se falhar, volta para Open.
+**Half-Open (Meio-Aberto):** Após um tempo de cooldown (ex: 30 segundos), ele permite uma ou poucas chamadas de teste. Se der certo, volta para o estado __Closed__; se falhar, volta para __Open__.
 
 Esta abordagem é baseada no livro ["Release It!: Design and Deploy Production-Ready Software (Pragmatic Programmers) 1st Edition" de Michael T. Nygard](https://www.amazon.com/Release-Production-Ready-Software-Pragmatic-Programmers/dp/0978739213), que popularizou este padrão.  
 
@@ -105,14 +108,7 @@ Explicação do código:
 
 **Execução:** Execute o código Python, após 2 falhas o circuit breaker será aberto, esperando 5 segundos, e após tentando recuperar.
 
-*Está é uma simulação simples de um Circuit Breaker para entendimento do seu fundamento. Em ambientes de produção, você pode utilizar o Resilience4j para Java com Spring Boot ou o Hystrix para versões mais antigas como por exemplo Java 11. Já com o .NET você pode utilizar o Polly.*
-
-Hystrix: Este é de longe o mais famoso de todos. É uma biblioteca Java criada pelo Netflix. O Hystrix também possui um dashboard próprio para monitorar os serviços.
-PyBreaker: Como o nome já entrega, esta é uma biblioteca do Python. É uma das mais famosas — de acordo com o git stars ⭐️— da linguagem.
-Polly: O Polly é uma biblioteca que garante a resiliência de aplicações .NET. Ela implementa diversos algoritmos para garantir isso, um deles é o Circuit Breaker.
-Opossum: Uma das bibliotecas Circuit Breakers para Node. (Na verdade, existem diversas opções, antes de escolher a opossum testei a brakes e a levee, das três achei esta mais simples 😃).
-
-
+Está foi uma simulação simples de um Circuit Breaker para entendimento do seu fundamento para uso em ambientes de produção atualmente você pode utilizar o **Resilience4j** para Java com Spring Boot ou o Hystrix para versões mais antigas. Existem também o **PyBreaker**  que é biblioteca para utilização com Python; o Polly para aplicações .NET; e o Opossum é uma das bibliotecas disponíveis para Node. 
 
 ### Possíveis erros em ambientes de produção e possíveis soluções
 
@@ -122,13 +118,13 @@ Em ambientes de produção, o Circuit Breakers são usados em sistemas como Netf
 
 **Descrição:** Se o limite de falhas for baixo demais por exemplo, abrindo com 1 falha, o circuito abrirá por flutuações normais como picos de rede, causando falsos positivos e indisponibilidade desnecessária. Se for configurado alto demais, demora para detectar falhas reais, permitindo erros em cascata.
 
-**Solução:** Monitore métricas reais utilizando ferramentas como Prometheus ou Datadog. Realize o ajuste baseado em dados começando com valores conservadores por exemplo com 5 falhas em 10 segundos e teste com load testing por exemplo com o [JMeter](https://jmeter.apache.org/) um software de código aberto, uma aplicação 100% Java, projetada para realizar testes de carga, comportamento funcional e medir desempenho de aplicações web.
+**Solução:** Monitore métricas reais utilizando ferramentas como Prometheus ou Datadog. Realize o ajuste baseado em dados começando com valores conservadores por exemplo com 5 falhas em 10 segundos e teste com load testing por exemplo com o [JMeter](https://jmeter.apache.org/) um software de código aberto projetado para realizar testes de carga, comportamento funcional e medir desempenho de aplicações web.
 
 - **Não lidar com timeouts corretamente**
 
 **Descrição:** Se o serviço chamado demora (slow response), mas não é contado como falha, o sistema trava esperando. Em ambientes de produção, isso acontece em APIs de terceiros sobrecarregadas.
 
-**Solução:** Incluir timeouts na lógica. Use fallbacks retornando dados em cache ou uma mensagem amigável. Em bibliotecas, configure "timeout threshold".
+**Solução:** Incluir timeouts na lógica, usar fallbacks para retornar dados em cache ou uma mensagem amigável. Em bibliotecas, configure "timeout threshold".
 
 - **Falta de monitoramento ou logging**
 
@@ -138,15 +134,14 @@ Em ambientes de produção, o Circuit Breakers são usados em sistemas como Netf
 
 - **Não testar recuperação (Half-Open)**
 
-**Descrição:** No Half-Open, se muitas requisições teste falharem, pode sobrecarregar o serviço recuperando por exemplo em um cluster, onde todos os nodes testam ao mesmo tempo o serviço.
+**Descrição:** No Half-Open, se muitas requisições teste falharem, pode sobrecarregar o serviço recuperando em um cluster, onde todos os nodes testam ao mesmo tempo o serviço.
 
 **Solução:** Limite chamadas no Half-Open por exemplo com 1 só por vez. Use jitter (atraso randômico) para evitar thundering herd (avalanche de requests).
 
 - **Ignorar contextos diferentes**
 
-**Descrição:** Um Circuit Breaker global para todos os usuários pode abrir para todos se um grupo causa falhas (ex: ataque DDoS localizado).
+**Descrição:** Um Circuit Breaker global para todos os usuários pode abrir para todos se um grupo causa falhas por exeomplo em ataque de DDoS localizado.
 
-**Solução:** Use Circuit Breakers por usuário, região ou tipo de request (per-instance breakers). Em microservices, aplique por endpoint.
+**Solução:** Use Circuit Breakers por usuário, região ou tipo de request (per-instance breakers) e emm microserviços aplique por endpoint.
 
-
-Comece praticando com esse MVP no seu código local. Se quiser aprofundar, leia sobre microservices no livro "Building Microservices" de Sam Newman. Qualquer dúvida, pergunta! 😊
+Este pequeno artigo serviu para compartilhar conhecimento e mostrar o que é um Circuit Breaker, para que ele serve e como pode ser utilizado. Espero que tenham gostado!
