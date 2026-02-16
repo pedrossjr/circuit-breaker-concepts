@@ -1,7 +1,3 @@
-https://marcdias.com.br/vamos-implementar-o-circuit-breaker-pattern/
-
-https://medium.com/trainingcenter/design-pattern-para-microservices-circuit-breaker-f4a5b68f73d1
-
 ## Circuit Breaker um design pattern para uso com microserviços
 
 ### O que é Circuit Breaker?
@@ -26,76 +22,69 @@ O Circuit Breaker em geral ajuda a:
 
 **Half-Open (Meio-Aberto):** Após um tempo de cooldown (ex: 30 segundos), ele permite uma ou poucas chamadas de teste. Se der certo, volta para o estado __Closed__; se falhar, volta para __Open__.
 
-Esta abordagem é baseada no livro ["Release It!: Design and Deploy Production-Ready Software (Pragmatic Programmers) 1st Edition" de Michael T. Nygard](https://www.amazon.com/Release-Production-Ready-Software-Pragmatic-Programmers/dp/0978739213), que popularizou este padrão.  
+![circuit-breaker.png](img/circuit-breaker.png)
 
-### Simulação simples de um Circuit Breaker  
+Esta abordagem é baseada no livro ["Release It!: Design and Deploy Production-Ready Software (Pragmatic Programmers) 1st Edition" de Michael T. Nygard](https://www.amazon.com/Release-Production-Ready-Software-Pragmatic-Programmers/dp/0978739213), que popularizou este padrão.
 
-Abaixo seguem um exemplo de código em Python para entendimento deste conceito.  
+### Simulação simples em Python de um Circuit Breaker  
 
-Imagine o seguinte cenário onde, um serviço que chama uma API externa que às vezes falha e o Circuit Breaker protege este serviço contra falhas repetidas.  
-
-**Código em Python**
+Abaixo segue um exemplo de código em Python para entendimento deste conceito.  
 
 ```
 import time
 import random
 
-# Classe CircuitBreaker
 class CircuitBreaker:
-    # Método construtor da classe
     def __init__(self, failure_threshold=3, timeout=5, retry_timeout=10):
-        self.failure_threshold = failure_threshold # Limite de falhas para abrir
-        self.timeout = timeout # Tempo de espera por resposta
-        self.retry_timeout = retry_timeout # Tempo de cooldown no estado Open
-        self.state = "FECHADO"
+        self.failure_threshold = failure_threshold
+        self.timeout = timeout
+        self.retry_timeout = retry_timeout
+        self.state = "CLOSED"
         self.failure_count = 0
         self.last_failure_time = None
 
     def call(self, func, *args, **kwargs):
-        if self.state == "ABERTO":
-            # Verifica se é hora de tentar Half-Open
+        if self.state == "OPEN":
             if time.time() - self.last_failure_time > self.retry_timeout:
-                self.state = "MEIO-ABERTO"
+                self.state = "HALF-OPEN"
             else:
-                raise Exception("O Circuit Breaker está ABERTO - Tente novamente mais tarde.")
+                raise Exception("Circuit is OPEN - Try again later.")
 
         try:
-            result = func(*args, **kwargs) # Executa a função
-            self._success() # Sucesso: reseta contadores
+            result = func(*args, **kwargs)
+            self._success()
             return result
         except Exception as e:
-            self._failure() # Falha: conta e possivelmente abre
+            self._failure()
             raise e
 
     def _success(self):
         self.failure_count = 0
-        if self.state == "MEIO-ABERTO":
-            self.state = "FECHADO" # Volta para Fechado se houver sucesso em MEIO-ABERTO (Half-Open)
+        if self.state == "HALF-OPEN":
+            self.state = "CLOSED"
 
     def _failure(self):
         self.failure_count += 1
         self.last_failure_time = time.time()
-        if self.failure_count >= self.failure_threshold and self.state != "ABERTO":
-            self.state = "ABERTO" # Abre o circuito
-        elif self.state == "MEIO-ABERTO":
-            self.state = "ABERTO" # Falha no teste: volta para Open
+        if self.failure_count >= self.failure_threshold and self.state != "OPEN":
+            self.state = "OPEN"
+        elif self.state == "HALF-OPEN":
+            self.state = "OPEN"
 
-# Função unreliable_service() que pode falhar com 50% de chance, simulando a chamada a um serviço
 def unreliable_service():
     if random.random() > 0.5:
-        raise Exception("O serviço falhou!")
-    return "Chamada com successo!"
+        raise Exception("Service failed!")
+    return "Success!"
 
-# Criando uma instância da classe CircuitBreaker
 cb = CircuitBreaker(failure_threshold=2, retry_timeout=5)
 
-for i in range(30):
+for i in range(10):
     try:
         result = cb.call(unreliable_service)
-        print(f"Tentativa {i+1}: {result} (Estado: {cb.state})")
+        print(f"Attempt {i+1}: {result} (State: {cb.state})")
     except Exception as e:
-        print(f"Tentativa {i+1}: {e} (Estado: {cb.state})")
-    time.sleep(1) # Simula o tempo entre chamadas
+        print(f"Attempt {i+1}: {e} (State: {cb.state})")
+    time.sleep(1)
 ```
 
 Explicação do código:
