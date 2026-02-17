@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://github.com/pedrossjr/circuit-breaker-theme/blob/main/img/circuit-breaker.png">
+<img src="https://github.com/pedrossjr/circuit-breaker-concepts/blob/main/img/circuit-breaker-theme.png">
 </div>
 
 ## Circuit Breaker um design pattern para microserviços
