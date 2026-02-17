@@ -4,9 +4,9 @@
 
 A tradução literária para o nome Circuit Breaker é “Disjuntor” então, fazendo uma analogia ao dispositivo de segurança elétrica de uma residência, quando há uma sobrecarga de energia devido a muitos aparelhos ligados, o disjuntor “abre”, desligando a energia para não ocorrer danos aos aparelhos ou um problema maior como um incêndio. 
 
-Na engenharia de software o Circuit Breaker funciona da mesma maneira. É um Design Pattern utilizado em microserviços, garantindo a proteção da aplicação de receber novas requisições assim que for detectado um problema que cause repetidas falhas, impedindo que estas continuem a falhar sucessivamente assim, consumir recursos desnecessários do serviço de aplicação.
+Na engenharia de software o Circuit Breaker é um design pattern utilizado em microserviços, para garantir a proteção da aplicação de receber novas requisições assim que for detectado sucessivas falhas, impedindo que estas continuem a consumir recursos desnecessários do serviço de aplicação.
 
-Em sistemas de ambientes de produção, as falhas são inevitáveis e pode ter certeza, tudo é uma questão de tempo, o servidor sobrecarrega, a rede cai e é neste momento que o Circuit Breaker entra em ação através de algumas regras definidas. Ele monitora a aplicação e quando falhas recorrentes são identificadas o disjuntor “abre” para evitar novas falhas e mensagens não amigáveis para o cliente.
+Em ambientes de produção, as falhas são inevitáveis e pode ter certeza, tudo é uma questão de tempo, o servidor sobrecarregará, a rede cairá e é neste momento que o Circuit Breaker entra em ação através de algumas regras definidas. Ele monitora a aplicação e quando falhas recorrentes são identificadas o disjuntor “abre” para evitar novas falhas e mensagens não amigáveis para o cliente.
 
 Quando o Circuit Breaker está aberto, ele pode retornar uma resposta alternativa (fallback), um erro imediato informando ao cliente que o serviço está temporariamente indisponível ou dados em cache. Após um período de tempo, o Circuit Breaker pode entrar em um estado de teste (half-open) para verificar se o serviço se recuperou, permitindo algumas requisições de teste. Se as requisições de teste forem bem-sucedidas, o Circuit Breaker fecha novamente e permite que as requisições normais sejam processadas.
 
@@ -107,34 +107,36 @@ Está foi uma simulação simples de um Circuit Breaker para entendimento do seu
 
 Em ambientes de produção, o Circuit Breakers são usados em sistemas como Netflix, AWS ou apps de grande escala mas, erros podem ocorrer. Citarei alguns abaixo:
 
-- **Thresholds mal configurados**
+**Thresholds mal configurados**
 
 **Descrição:** Se o limite de falhas for baixo demais por exemplo, abrindo com 1 falha, o circuito abrirá por flutuações normais como picos de rede, causando falsos positivos e indisponibilidade desnecessária. Se for configurado alto demais, demora para detectar falhas reais, permitindo erros em cascata.
 
 **Solução:** Monitore métricas reais utilizando ferramentas como Prometheus ou Datadog. Realize o ajuste baseado em dados começando com valores conservadores por exemplo com 5 falhas em 10 segundos e teste com load testing por exemplo com o [JMeter](https://jmeter.apache.org/) um software de código aberto projetado para realizar testes de carga, comportamento funcional e medir desempenho de aplicações web.
 
-- **Não lidar com timeouts corretamente**
+**Não lidar com timeouts corretamente**
 
 **Descrição:** Se o serviço chamado demora (slow response), mas não é contado como falha, o sistema trava esperando. Em ambientes de produção, isso acontece em APIs de terceiros sobrecarregadas.
 
 **Solução:** Incluir timeouts na lógica, usar fallbacks para retornar dados em cache ou uma mensagem amigável. Em bibliotecas, configure "timeout threshold".
 
-- **Falta de monitoramento ou logging**
+**Falta de monitoramento ou logging**
 
 **Descrição:** O circuito abre, mas ninguém sabe por quê. Em ambientes de produção, isso leva a downtime prolongado sem alertas.
 
 **Solução:** Integre com sistemas de observabilidade por exemplo como o [ELK Stack](https://www.elastic.co/elastic-stack) para logs, enviando alertas (Slack, PagerDuty) quando o estado mudar, registrando os motivos de falhas para análise post-mortem.
 
-- **Não testar recuperação (Half-Open)**
+**Não testar recuperação (Half-Open)**
 
 **Descrição:** No Half-Open, se muitas requisições teste falharem, pode sobrecarregar o serviço recuperando em um cluster, onde todos os nodes testam ao mesmo tempo o serviço.
 
 **Solução:** Limite chamadas no Half-Open por exemplo com 1 só por vez. Use jitter (atraso randômico) para evitar thundering herd (avalanche de requests).
 
-- **Ignorar contextos diferentes**
+**Ignorar contextos diferentes**
 
 **Descrição:** Um Circuit Breaker global para todos os usuários pode abrir para todos se um grupo causa falhas por exeomplo em ataque de DDoS localizado.
 
 **Solução:** Use Circuit Breakers por usuário, região ou tipo de request (per-instance breakers) e emm microserviços aplique por endpoint.
+
+Você pode encontrar mais detalhes sobre este assunto no site [https://resilience4j.readme.io/docs/circuitbreaker](https://resilience4j.readme.io/docs/getting-started-3) onde existe uma documentação completa para implementá-lo.
 
 Este pequeno artigo serviu para compartilhar conhecimento e mostrar o que é um Circuit Breaker, para que ele serve e como pode ser utilizado. Espero que tenham gostado!
