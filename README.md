@@ -28,7 +28,7 @@ O Circuit Breaker em geral ajuda a:
   
 <p style="text-align: center">
 
-<img src="https://github.com/pedrossjr/circuit-breaker-concepts/img/circuit-breaker.png">
+<img src="https://github.com/pedrossjr/circuit-breaker-concepts/blob/main/img/circuit-breaker.png">
 </p>
 
 
