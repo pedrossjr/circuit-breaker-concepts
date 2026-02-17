@@ -24,11 +24,9 @@ O Circuit Breaker em geral ajuda a:
 
 **Half-Open (Meio-Aberto):** Após um tempo de cooldown (ex: 30 segundos), ele permite uma ou poucas chamadas de teste. Se der certo, volta para o estado __Closed__; se falhar, volta para __Open__.
 
-![circuit-breaker.png](img/circuit-breaker.png)
-
 <div align="center">
 <img src="https://github.com/pedrossjr/circuit-breaker-concepts/blob/main/img/circuit-breaker.png">
-</div>
+</div>  
 
 Esta abordagem é baseada no livro ["Release It!: Design and Deploy Production-Ready Software (Pragmatic Programmers) 1st Edition" de Michael T. Nygard](https://www.amazon.com/Release-Production-Ready-Software-Pragmatic-Programmers/dp/0978739213), que popularizou este padrão.
 
