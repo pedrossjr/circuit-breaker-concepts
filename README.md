@@ -1,3 +1,7 @@
+<div align="center">
+<img src="https://github.com/pedrossjr/circuit-breaker-theme/blob/main/img/circuit-breaker.png">
+</div>
+
 ## Circuit Breaker um design pattern para microserviços
 
 ### O que é Circuit Breaker?
@@ -26,7 +30,7 @@ O Circuit Breaker em geral ajuda a:
 
 <div align="center">
 <img src="https://github.com/pedrossjr/circuit-breaker-concepts/blob/main/img/circuit-breaker.png">
-</div>  
+</div>
 
 Esta abordagem é baseada no livro ["Release It!: Design and Deploy Production-Ready Software (Pragmatic Programmers) 1st Edition" de Michael T. Nygard](https://www.amazon.com/Release-Production-Ready-Software-Pragmatic-Programmers/dp/0978739213), que popularizou este padrão.
 
