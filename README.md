@@ -141,6 +141,6 @@ Em ambientes de produção, o Circuit Breakers são usados em sistemas como Netf
 
 **Solução:** Use Circuit Breakers por usuário, região ou tipo de request (per-instance breakers) e emm microserviços aplique por endpoint.
 
-Este pequeno artigo serviu para compartilhar conhecimento e mostrar o que é um Circuit Breaker, para que ele serve e como pode ser utilizado. Para uma melhor experiência, utilize ferramentas de observabilidade como Prometheus e Grafana para monitorar em tempo real suas aplicações.
+Este pequeno artigo serviu para compartilhar conhecimento e mostrar o que é um Circuit Breaker, para que ele serve e como pode ser utilizado. Para uma melhor experiência, utilize ferramentas de observabilidade para monitorar em tempo real suas aplicações.
 
 Espero que tenham apreciado a leitura! :blush:
