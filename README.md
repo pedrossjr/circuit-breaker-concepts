@@ -1,4 +1,4 @@
-## Circuit Breaker um design pattern para uso com microserviços
+## Circuit Breaker um design pattern para microserviços
 
 ### O que é Circuit Breaker?
 
@@ -101,7 +101,7 @@ Explicação do código:
 
 **Execução:** Execute o código Python, após 2 falhas o circuit breaker será aberto, esperando 5 segundos, e após tentando recuperar.
 
-Está foi uma simulação simples de um Circuit Breaker para entendimento do seu fundamento para uso em ambientes de produção atualmente você pode utilizar o **Resilience4j** para Java com Spring Boot ou o Hystrix para versões mais antigas. Existem também o **PyBreaker**  que é biblioteca para utilização com Python; o Polly para aplicações .NET; e o Opossum é uma das bibliotecas disponíveis para Node. 
+Está foi uma simulação simples de um Circuit Breaker para entendimento do seu fundamento para uso em ambientes de produção atualmente você pode utilizar o [**Resilience4j**](https://resilience4j.readme.io/docs/getting-started-3) para Java com Spring Boot ou o [**Hystrix**](https://github-com.translate.goog/Netflix/Hystrix?_x_tr_sl=en&_x_tr_tl=pt&_x_tr_hl=pt&_x_tr_pto=tc) para versões mais antigas. Existem também o [**PyBreaker**](https://pypi.org/project/pybreaker/) que é biblioteca para utilização com Python; o [**Polly**](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/implement-circuit-breaker-pattern) para aplicações .NET; e o Opossum é uma das bibliotecas disponíveis para Node. 
 
 ### Possíveis erros em ambientes de produção e possíveis soluções
 
@@ -137,6 +137,6 @@ Em ambientes de produção, o Circuit Breakers são usados em sistemas como Netf
 
 **Solução:** Use Circuit Breakers por usuário, região ou tipo de request (per-instance breakers) e emm microserviços aplique por endpoint.
 
-Você pode encontrar mais detalhes sobre este assunto no site [https://resilience4j.readme.io/docs/circuitbreaker](https://resilience4j.readme.io/docs/getting-started-3) onde existe uma documentação completa para implementá-lo.
+Este pequeno artigo serviu para compartilhar conhecimento e mostrar o que é um Circuit Breaker, para que ele serve e como pode ser utilizado. Para uma melhor experiência, utilize ferramentas de observabilidade como Prometheus e Grafana para monitorar em tempo real suas aplicações.
 
-Este pequeno artigo serviu para compartilhar conhecimento e mostrar o que é um Circuit Breaker, para que ele serve e como pode ser utilizado. Espero que tenham gostado!
+Espero que tenham gostado!
