@@ -2,17 +2,19 @@
 
 ### O que é Circuit Breaker?
 
-O Circuit Breaker é a tradução literária para “Disjuntor” então, fazendo uma analogia a engenharia elétrica, pense em um disjuntor de energia em uma residência, quando há uma sobrecarga de energia, devido a muitos aparelhos ligados, o disjuntor, também conhecido com DR, “abre” ou seja, desliga a energia para que não ocorra danos aos aparelhos ou algo maior como um incêndio por exemplo. Após a correção da elétrica, o eletricista pode “fechar“ o disjuntor novamente para testar se o problema foi resolvido, caso o contrário ele o mantém aberto até tudo estar resolvido.
+A tradução literária para o nome Circuit Breaker é “Disjuntor” então, fazendo uma analogia ao dispositivo de segurança elétrica de uma residência, quando há uma sobrecarga de energia devido a muitos aparelhos ligados, o disjuntor “abre”, desligando a energia para não ocorrer danos aos aparelhos ou um problema maior como um incêndio. 
 
-Na engenharia de software o Circuit Breaker funciona da mesma maneira. É um Design Pattern muito utilizado em microserviços, garantindo a proteção da aplicação de receber novas requisições assim que for detectado um problema que cause repetidas falhas de requisição impedindo que estas requisições continuem, falhando sucessivamente e consumindo recursos desnecessários do servidor de aplicação. Esta ação previne contra efeito em cascata de falhas no sistema por inteiro.
+Na engenharia de software o Circuit Breaker funciona da mesma maneira. É um Design Pattern utilizado em microserviços, garantindo a proteção da aplicação de receber novas requisições assim que for detectado um problema que cause repetidas falhas, impedindo que estas continuem a falhar sucessivamente assim, consumir recursos desnecessários do serviço de aplicação.
 
-Em sistemas distribuídos em ambientes de produção, as falhas são inevitáveis e tudo é uma questão de tempo, o servidor sobrecarrega, a rede cai e neste momento que o Circuit Breaker entra em ação, através de algumas regras definidas. Ele monitora a aplicação e quando falhas recorrentes são identificadas o disjuntor “abre” para evitar mais problemas impedindo posteriormente uma catástrofe sistêmica.
+Em sistemas de ambientes de produção, as falhas são inevitáveis e pode ter certeza, tudo é uma questão de tempo, o servidor sobrecarrega, a rede cai e é neste momento que o Circuit Breaker entra em ação através de algumas regras definidas. Ele monitora a aplicação e quando falhas recorrentes são identificadas o disjuntor “abre” para evitar novas falhas e mensagens não amigáveis para o cliente.
+
+Quando o Circuit Breaker está aberto, ele pode retornar uma resposta alternativa (fallback), um erro imediato informando ao cliente que o serviço está temporariamente indisponível ou dados em cache. Após um período de tempo, o Circuit Breaker pode entrar em um estado de teste (half-open) para verificar se o serviço se recuperou, permitindo algumas requisições de teste. Se as requisições de teste forem bem-sucedidas, o Circuit Breaker fecha novamente e permite que as requisições normais sejam processadas.
 
 O Circuit Breaker em geral ajuda a:
 
-- Reduzir latência (espera por respostas que não virão).
-- Evitar sobrecarga (falhas recorrentes de requisições causando sobrecarga no serviço).
-- Recuperação automática (Automaticamente o serviço retorna quando não são mais detectados problemas).
+- Reduzir latência de espera por respostas que não serão retornadas.
+- Evitar sobrecarga ao serviço, devida as falhas recorrentes de requisições.
+- Recuperação automática, quando não são mais detectados problemas.
 
 ### Estados de um Circuit Breaker
 
@@ -23,6 +25,14 @@ O Circuit Breaker em geral ajuda a:
 **Half-Open (Meio-Aberto):** Após um tempo de cooldown (ex: 30 segundos), ele permite uma ou poucas chamadas de teste. Se der certo, volta para o estado __Closed__; se falhar, volta para __Open__.
 
 ![circuit-breaker.png](img/circuit-breaker.png)
+  
+<p style="text-align: center">
+
+<img src="https://github.com/pedrossjr/circuit-breaker-concepts/img/circuit-breaker.png">
+</p>
+
+
+
 
 Esta abordagem é baseada no livro ["Release It!: Design and Deploy Production-Ready Software (Pragmatic Programmers) 1st Edition" de Michael T. Nygard](https://www.amazon.com/Release-Production-Ready-Software-Pragmatic-Programmers/dp/0978739213), que popularizou este padrão.
 
